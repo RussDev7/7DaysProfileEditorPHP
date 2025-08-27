@@ -4,15 +4,15 @@
 このツールは、Karlovsky120/7DaysProfileEditorに大きくインスパイアされ、より手軽に利用できるモダンなサーバーサイド版として開発されました。
 
 ## 主な機能
-🖥️ Webベース: クライアントへのインストールは不要です。Webサーバーさえあれば、どのデバイスからでも利用できます。
-📤 簡単なファイルアップロード: シンプルなインターフェースから、.ttpファイルを直接アップロードして解析を開始できます。
-🤖 動的なプレイヤー名検出: ファイルのバイナリ構造を分析し、プレイヤー名を自動で正確に検出します。
-📊 詳細なデータ表示: クエストの進捗、スキル、パーク、能力値などの内部データを一覧で表示します。
-HEX値の可視化: スキルレベルやパークの取得状況など、ステータスに関連する可能性のある値を16進数で抽出し、詳細な分析をサポートします。
+- 🖥️ Webベース: クライアントへのインストールは不要です。Webサーバーさえあれば、どのデバイスからでも利用できます。
+- 📤 簡単なファイルアップロード: シンプルなインターフェースから、.ttpファイルを直接アップロードして解析を開始できます。
+- 🤖 動的なプレイヤー名検出: ファイルのバイナリ構造を分析し、プレイヤー名を自動で正確に検出します。
+- 📊 詳細なデータ表示: クエストの進捗、スキル、パーク、能力値などの内部データを一覧で表示します。
+- HEX値の可視化: スキルレベルやパークの取得状況など、ステータスに関連する可能性のある値を16進数で抽出し、詳細な分析をサポートします。
 
 ## 動作環境
-PHP 7.4 以上
-Webサーバー (Apache, Nginxなど)
+- PHP 7.4 以上
+- Webサーバー (Apache, Nginxなど)
 
 ## 使い方
 このリポジトリのファイルをダウンロードし、お使いのWebサーバーの公開ディレクトリに配置します。
@@ -29,10 +29,10 @@ C:\Users\[あなたのユーザー名]\AppData\Roaming\7DaysToDie\Saves\[ワー�
 スキル・パーク: skill..., att..., perk... などの命名規則を持つキーワードを正規表現で網羅的に検索し、そのキーワードの直前のバイナリデータをステータス候補（16進数）として読み込みます。
 
 ## 今後の予定 (Roadmap)
-[ ] 編集機能: 値（スキルレベルなど）の変更と、有効な.ttpファイルとしての書き戻し機能の実装。
-[ ] データマッピング: perkdeadeye のような内部名を「デッドアイ」のような日本語の表示名に変換する機能。
-[ ] 16進数データのデコード: ステータス候補の16進数値を、実際のレベルやポイント数（整数）に変換して表示する。
-[ ] 他ファイルへの対応: プレイヤープロファイル以外のセーブデータ（マップデータなど）の解析。
+- 編集機能: 値（スキルレベルなど）の変更と、有効な.ttpファイルとしての書き戻し機能の実装。
+- データマッピング: perkdeadeye のような内部名を「デッドアイ」のような日本語の表示名に変換する機能。
+- 16進数データのデコード: ステータス候補の16進数値を、実際のレベルやポイント数（整数）に変換して表示する。
+- 他ファイルへの対応: プレイヤープロファイル以外のセーブデータ（マップデータなど）の解析。
 
 ### ライセンス
 このプロジェクトは MITライセンス の下で公開されています。
@@ -46,11 +46,11 @@ This tool is optimized for Alpha 21 (v2.2 & v2.3) save files.
 It was heavily inspired by Karlovsky120/7DaysProfileEditor, and was developed as a modern, server-side alternative for easy access.
 
 ## Features
-🖥️ Web-Based: No client-side installation required. Runs on any standard web server.
-📤 Easy File Upload: A simple interface to upload and analyze your .ttp file.
-🤖 Dynamic Player Name Detection: Automatically and accurately detects the player name by analyzing the file's binary structure.
-📊 Detailed Data View: Displays internal data such as quest progress, skills, perks, and attributes.
-HEX Status Viewer: Extracts and displays potential status values (e.g., skill levels, perk points) in hexadecimal to aid in detailed analysis.
+- 🖥️ Web-Based: No client-side installation required. Runs on any standard web server.
+- 📤 Easy File Upload: A simple interface to upload and analyze your .ttp file.
+- 🤖 Dynamic Player Name Detection: Automatically and accurately detects the player name by analyzing the file's binary structure.
+- 📊 Detailed Data View: Displays internal data such as quest progress, skills, perks, and attributes.
+- HEX Status Viewer: Extracts and displays potential status values (e.g., skill levels, perk points) in hexadecimal to aid in detailed analysis.
 
 ## Requirements
 - PHP 7.4 or higher
@@ -71,10 +71,10 @@ Player Name Detection: The player's name is identified using a structural anchor
 Skill & Perk Parsing: A regular expression is used to comprehensively find all keywords matching known patterns (skill..., att..., perk..., etc.). The parser then reads the adjacent bytes for each keyword to display its potential status value.
 
 ### Roadmap
-[ ] Editing Feature: Implement the ability to modify values and write them back to a valid .ttp file.
-[ ] Data Mapping: Convert internal names like perkdeadeye to user-friendly display names like "Deadeye".
-[ ] Hex Value Decoding: Translate hexadecimal status values (e.g., 01000000) into integers (1).
-[ ] Support for Other Files: Expand parsing capabilities to include other save files, such as map data.
+- Editing Feature: Implement the ability to modify values and write them back to a valid .ttp file.
+- Data Mapping: Convert internal names like perkdeadeye to user-friendly display names like "Deadeye".
+- Hex Value Decoding: Translate hexadecimal status values (e.g., 01000000) into integers (1).
+- Support for Other Files: Expand parsing capabilities to include other save files, such as map data.
 
 ### License
 This project is licensed under the MIT License.
