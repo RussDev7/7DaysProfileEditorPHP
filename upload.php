@@ -48,6 +48,11 @@ if (isset($_FILES['ttpFile']) && $_FILES['ttpFile']['error'] === UPLOAD_ERR_OK) 
         </small>
     </div>
 </head>
+<style>
+.text-monospace { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+.is-invalid { border-color:#dc3545; }
+.is-valid   { border-color:#198754; }
+</style>
 <body>
     <div class="container">
         <h1>解析結果 (Analysis results)</h1>
@@ -68,42 +73,57 @@ if (isset($_FILES['ttpFile']) && $_FILES['ttpFile']['error'] === UPLOAD_ERR_OK) 
                 <h2><span class="badge bg-warning text-dark">ステータス候補 (16進数) (Status candidate (hexadecimal))</span></h2>
                 <p class="text-muted">キーワードの直前の4バイトを読み込んだ値です。実際のステータスとは異なる場合があります。 (This is the value read from the 4 bytes immediately before the keyword. It may differ from the actual status.)</p>
                 <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>キーワード (Keyword)</th>
-                            <th>ステータス候補 (Hex)</th>
-							<th>値 (UInt32 LE)</th> 
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($parsed_data['statuses'] as $status): ?>
-                        <?php
-                        $hex = $status['potential_status_hex'] ?? '';
-                        $bin = ($hex && preg_match('/^[0-9A-Fa-f]{8}$/', $hex)) ? hex2bin($hex) : false;
-                    
-                        // Little-endian unsigned 32-bit
-                        $valLE = ($bin !== false) ? unpack('V', $bin)[1] : null;
-                    
-                        // (Optional) Big-endian and signed views if you want them:
-                        // $valBE = ($bin !== false) ? unpack('N', $bin)[1] : null;
-                        // $signedLE = ($valLE !== null && $valLE > 0x7FFFFFFF) ? $valLE - 0x100000000 : $valLE;
-                        ?>
-                        <tr>
-                            <td><?= htmlspecialchars($status['name']) ?></td>
-                            <td><span class="hex-value"><?= htmlspecialchars(strtoupper($hex)) ?></span></td>
-                            <td>
-                                <?php if ($valLE !== null): ?>
-                                    <?= htmlspecialchars((string)$valLE) ?>
-                                    <!-- (Optional): <small class="text-muted">BE <?= '<?= htmlspecialchars((string)$valBE) ?>' ?></small> -->
-                                    <!-- (Optional): <small class="text-muted">Int32 <?= '<?= htmlspecialchars((string)$signedLE) ?>' ?></small> -->
-                                <?php else: ?>
-                                    <span class="text-danger">invalid</span>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
+                  <thead>
+                    <tr>
+                      <th>キーワード</th>
+                      <th>ステータス候補 (Hex)</th>
+                      <th>値 (UInt32 BE)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($parsed_data['statuses'] as $i => $status): 
+                        $name = $status['name'] ?? '';
+                        $hex  = strtoupper($status['potential_status_hex'] ?? '');
+                        $dec  = (ctype_xdigit($hex) && strlen($hex) === 8) ? hexdec($hex) : ''; // BE -> decimal
+                    ?>
+                      <tr>
+                        <td><?= htmlspecialchars($name) ?></td>
+                
+                        <!-- HEX input -->
+                        <td style="min-width:260px;">
+                          <div class="input-group input-group-sm">
+                            <span class="input-group-text">0x</span>
+                            <input
+                              id="hex_<?= $i ?>"
+                              name="statuses[<?= $i ?>][value_hex]"
+                              class="form-control text-monospace"
+                              value="<?= htmlspecialchars($hex) ?>"
+                              pattern="[0-9A-Fa-f]{8}"
+                              maxlength="8"
+                              autocomplete="off"
+                              inputmode="latin"
+                              required
+                            >
+                          </div>
+                          <input type="hidden" name="statuses[<?= $i ?>][name]"
+                                 value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>">
+                        </td>
+                
+                        <!-- DECIMAL (UInt32 BE) input -->
+                        <td style="min-width:200px;">
+                          <input
+                            id="dec_<?= $i ?>"
+                            name="statuses[<?= $i ?>][value_u32_be]"
+                            type="number"
+                            class="form-control form-control-sm"
+                            min="0" max="4294967295"
+                            value="<?= htmlspecialchars((string)$dec) ?>"
+                            autocomplete="off"
+                          >
+                        </td>
+                      </tr>
                     <?php endforeach; ?>
-                    </tbody>
-                    
+                  </tbody>
                 </table>
             </div>
 
@@ -168,5 +188,55 @@ if (isset($_FILES['ttpFile']) && $_FILES['ttpFile']['error'] === UPLOAD_ERR_OK) 
           </form>
         <?php endif; ?>
     </div>
+<script>
+(function(){
+  function clamp32(n){
+    n = Number(String(n).replace(/[^\d]/g,'')) || 0;
+    if (n < 0) n = 0;
+    if (n > 4294967295) n = 4294967295;
+    return Math.floor(n);
+  }
+  function hexSan(h){
+    return (h || '').replace(/[^0-9a-fA-F]/g,'').slice(0,8).toUpperCase();
+  }
+  function toHex8BE(n){
+    return (clamp32(n) >>> 0).toString(16).padStart(8,'0').toUpperCase();
+  }
+
+  const hexInputs = document.querySelectorAll('input[id^="hex_"]');
+  let updating = false;
+
+  hexInputs.forEach(hexInput => {
+    const id = hexInput.id.split('_')[1];
+    const decInput = document.getElementById('dec_' + id);
+
+    // Hex -> Dec
+    hexInput.addEventListener('input', () => {
+      if (updating) return; updating = true;
+      const clean = hexSan(hexInput.value);
+      hexInput.value = clean;
+
+      if (clean.length === 8) {
+        const val = parseInt(clean, 16); // interpret as BE
+        decInput.value = String(val);
+        hexInput.classList.remove('is-invalid'); hexInput.classList.add('is-valid');
+      } else {
+        hexInput.classList.remove('is-valid'); hexInput.classList.add('is-invalid');
+      }
+      updating = false;
+    });
+
+    // Dec -> Hex
+    decInput.addEventListener('input', () => {
+      if (updating) return; updating = true;
+      const val = clamp32(decInput.value);
+      decInput.value = String(val);
+      hexInput.value = toHex8BE(val);       // keep hex authoritative
+      hexInput.classList.remove('is-invalid'); hexInput.classList.add('is-valid');
+      updating = false;
+    });
+  });
+})();
+</script>
 </body>
 </html>

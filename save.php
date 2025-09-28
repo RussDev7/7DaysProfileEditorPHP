@@ -35,13 +35,27 @@ $skipped = [];
 foreach ($statuses as $row) {
     $name = isset($row['name']) ? (string)$row['name'] : '';
     $hex  = isset($row['value_hex']) ? strtoupper(trim((string)$row['value_hex'])) : '';
+    $dec  = isset($row['value_u32_be']) ? trim((string)$row['value_u32_be']) : '';
 
-    if ($name === '' || $hex === '') {
-        $skipped[] = ['name' => $name, 'reason' => 'empty name or value'];
+    if ($name === '') {
+        $skipped[] = ['name' => $name, 'reason' => 'empty name'];
         continue;
     }
-    if (!preg_match('/^[0-9A-F]{8}$/', $hex)) {
-        $skipped[] = ['name' => $name, 'reason' => 'value_hex must be 8 hex chars'];
+
+    // Validate hex if present
+    $hexOk = ($hex !== '' && preg_match('/^[0-9A-F]{8}$/', $hex));
+
+    // If hex is missing/invalid, but decimal is provided & valid (0..4294967295), derive hex (big-endian text)
+    if (!$hexOk && $dec !== '' && preg_match('/^\d+$/', $dec)) {
+        $n = (int)$dec; // safe on 64-bit PHP; 0..4294967295 fits
+        if ($n >= 0 && $n <= 4294967295) {
+            $hex   = strtoupper(str_pad(dechex($n), 8, '0', STR_PAD_LEFT));
+            $hexOk = true;
+        }
+    }
+
+    if (!$hexOk) {
+        $skipped[] = ['name' => $name, 'reason' => 'invalid hex/decimal'];
         continue;
     }
 
@@ -65,7 +79,14 @@ foreach ($statuses as $row) {
 
     // Apply the 4-byte overwrite
     $content = substr_replace($content, $bytes, $status_pos, 4);
-    $applied[] = ['name' => $name, 'pos' => $status_pos, 'hex' => $hex];
+
+    // (Optional) include decimal for audit/debug
+    $applied[] = [
+        'name' => $name,
+        'pos'  => $status_pos,
+        'hex'  => $hex,
+        // 'u32_be' => hexdec($hex), // uncomment if useful
+    ];
 }
 
 // Build a filename
