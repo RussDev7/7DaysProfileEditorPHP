@@ -1,0 +1,22 @@
+<?php
+return [
+    'app.title' => '7 Days to Die - TTP File Analyzer',
+    'app.subtitle' => 'Upload a v2.3 player data file (EOS_....ttp).',
+    'upload.select_file' => 'Select TTP file',
+    'upload.analyze' => 'Analyze',
+    'section.player_info' => 'Player Info',
+    'section.quests_pois' => 'Quests & POIs',
+    'section.statuses' => 'Statuses / Skills & Perks',
+    'section.edit_save' => 'Edit & Save',
+    'editor.help' => 'Each row is the keyword and the 4 bytes (HEX) just before it.',
+    'editor.download' => 'Download edited .ttp',
+    'editor.none' => 'No editable statuses found.',
+    'nav.analyze_another' => 'Analyze another file',
+    'nav.language' => 'Language',
+    'lang.english' => 'English',
+    'lang.japanese' => '日本語',
+    'table.field'  => 'Field',
+    'table.raw'    => 'Raw',
+    'table.int'    => 'Int (LE)',
+    'table.signed' => 'signed',
+];

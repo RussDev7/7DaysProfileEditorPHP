@@ -1,0 +1,22 @@
+<?php
+return [
+    'app.title' => '7 Days to Die - TTP ファイル解析ツール',
+    'app.subtitle' => 'バージョン2.3のプレイヤーデータファイル (EOS_....ttp) をアップロードしてください。',
+    'upload.select_file' => 'TTPファイルを選択',
+    'upload.analyze' => '解析する',
+    'section.player_info' => 'プレイヤー情報',
+    'section.quests_pois' => 'クエスト & POI',
+    'section.statuses' => 'ステータス / スキル & パーク',
+    'section.edit_save' => '編集して保存',
+    'editor.help' => '各行は「キーワード」と、その直前の4バイト(HEX)です。',
+    'editor.download' => '編集した .ttp をダウンロード',
+    'editor.none' => '編集可能なステータスが見つかりませんでした。',
+    'nav.analyze_another' => '別のファイルを解析する',
+    'nav.language' => '言語',
+    'lang.english' => 'English',
+    'lang.japanese' => '日本語',
+    'table.field'  => '項目',
+    'table.raw'    => '生データ',
+    'table.int'    => '整数(LE)',
+    'table.signed' => '符号付',
+];
