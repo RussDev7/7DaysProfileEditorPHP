@@ -45,7 +45,7 @@ foreach ($statuses as $row) {
     // Validate hex if present
     $hexOk = ($hex !== '' && preg_match('/^[0-9A-F]{8}$/', $hex));
 
-    // If hex is missing/invalid, but decimal is provided & valid (0..4294967295), derive hex (big-endian text)
+    // If hex is missing/invalid, but decimal is provided & valid (0..4294967295), derive hex (big-endian text).
     if (!$hexOk && $dec !== '' && preg_match('/^\d+$/', $dec)) {
         $n = (int)$dec; // safe on 64-bit PHP; 0..4294967295 fits
         if ($n >= 0 && $n <= 4294967295) {
@@ -77,25 +77,23 @@ foreach ($statuses as $row) {
         continue;
     }
 
-    // Apply the 4-byte overwrite
+    // Apply the 4-byte overwrite.
     $content = substr_replace($content, $bytes, $status_pos, 4);
 
-    // (Optional) include decimal for audit/debug
+    // (Optional) include decimal for audit/debug.
     $applied[] = [
         'name' => $name,
         'pos'  => $status_pos,
         'hex'  => $hex,
-        // 'u32_be' => hexdec($hex), // uncomment if useful
+        // 'u32_be' => hexdec($hex), // uncomment if useful.
     ];
 }
 
-// Build a filename
+// Build a filename.
 $download_name = 'edited_' . date('Ymd_His') . '.ttp';
 
-// Stream as file download
+// Stream as file download.
 header('Content-Type: application/octet-stream');
 header('Content-Disposition: attachment; filename="' . $download_name . '"');
 header('Content-Length: ' . strlen($content));
 echo $content;
-
-// (Optional: you could log $applied / $skipped to a sidecar file.)
