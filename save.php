@@ -89,6 +89,102 @@ foreach ($statuses as $row) {
     ];
 }
 
+// --- Remove Quests & POIs ---
+$remove_quests = $_POST['remove_quests'] ?? [];
+if (!is_array($remove_quests)) $remove_quests = [];
+$remove_quests = array_values(array_unique(array_filter(array_map('strval', $remove_quests))));
+
+$removeAll   = !empty($_POST['quests_remove_all']);
+$statusOnly  = !empty($_POST['quests_status_only']); // <-- your toggle
+
+$quest_removals = [];
+
+foreach ($remove_quests as $token) {
+    $hits = 0;
+    $len  = strlen($token);
+    if ($len === 0) continue;
+
+    if ($removeAll) {
+        $offset = 0;
+        while (($pos = strpos($content, $token, $offset)) !== false) {
+            // Zero the 4 bytes immediately before the keyword (status reset).
+            $status_pos = $pos - 4;
+            if ($status_pos >= 0 && $status_pos + 4 <= strlen($content)) {
+                $content = substr_replace($content, "\x00\x00\x00\x00", $status_pos, 4);
+            }
+
+            // Scrub the keyword in-place unless "status only" is checked.
+            if (!$statusOnly) {
+                $content = substr_replace($content, str_repeat("\x00", $len), $pos, $len);
+            }
+
+            // Move past this occurrence to avoid looping on the same match.
+            $offset = $pos + $len;
+            $hits++;
+        }
+    } else {
+        $pos = strpos($content, $token);
+        if ($pos !== false) {
+            $status_pos = $pos - 4;
+            if ($status_pos >= 0 && $status_pos + 4 <= strlen($content)) {
+                $content = substr_replace($content, "\x00\x00\x00\x00", $status_pos, 4);
+            }
+            if (!$statusOnly) {
+                $content = substr_replace($content, str_repeat("\x00", $len), $pos, $len);
+            }
+            $hits = 1;
+        }
+    }
+
+    $quest_removals[] = ['token' => $token, 'hits' => $hits, 'status_only' => $statusOnly];
+}
+
+// --- Remove Statuses ---
+$remove_statuses = $_POST['remove_statuses'] ?? [];
+if (!is_array($remove_statuses)) $remove_statuses = [];
+$remove_statuses = array_values(array_unique(array_filter(array_map('strval', $remove_statuses))));
+
+$st_remove_all  = !empty($_POST['statuses_remove_all']);
+$st_status_only = !empty($_POST['statuses_status_only']); // If true: zero bytes only, don't scrub text.
+$status_removals = [];
+
+foreach ($remove_statuses as $token) {
+    $hits = 0;
+    $len  = strlen($token);
+    if ($len === 0) continue;
+
+    if ($st_remove_all) {
+        $offset = 0;
+        while (($pos = strpos($content, $token, $offset)) !== false) {
+            // Zero the 4 bytes immediately before the keyword (status reset).
+            $status_pos = $pos - 4;
+            if ($status_pos >= 0 && $status_pos + 4 <= strlen($content)) {
+                $content = substr_replace($content, "\x00\x00\x00\x00", $status_pos, 4);
+            }
+            // Optionally scrub the keyword text in-place (no size change).
+            if (!$st_status_only) {
+                $content = substr_replace($content, str_repeat("\x00", $len), $pos, $len);
+            }
+            $offset = $pos + $len;
+            $hits++;
+        }
+    } else {
+        $pos = strpos($content, $token);
+        if ($pos !== false) {
+            $status_pos = $pos - 4;
+            if ($status_pos >= 0 && $status_pos + 4 <= strlen($content)) {
+                $content = substr_replace($content, "\x00\x00\x00\x00", $status_pos, 4);
+            }
+            if (!$st_status_only) {
+                $content = substr_replace($content, str_repeat("\x00", $len), $pos, $len);
+            }
+            $hits = 1;
+        }
+    }
+
+    $status_removals[] = ['token' => $token, 'hits' => $hits];
+}
+
 // Build a filename.
 $download_name = 'edited_' . date('Ymd_His') . '.ttp';
 

@@ -34,4 +34,12 @@ return [
     'table.raw'              => 'Raw',
     'table.int'              => 'Int (LE)',
     'table.signed'           => 'signed',
+    'quests.help'            => 'Select entries to remove. Removal zeros the 4 status bytes before the keyword and scrubs the keyword in-place.',
+    'quests.remove'          => 'Remove',
+    'quests.remove_all'      => 'Remove all occurrences of each selected entry',
+    'quests.status_only'     => 'Reset status only (don’t scrub text)',
+    'statuses.help'          => 'Select statuses to remove. This resets the 4 bytes before the keyword and (optionally) scrubs the keyword in-place.',
+    'statuses.remove'        => 'Remove',
+    'statuses.remove_all'    => 'Remove all occurrences of each selected entry',
+    'statuses.status_only'   => 'Reset status only (don’t scrub text)',
 ];

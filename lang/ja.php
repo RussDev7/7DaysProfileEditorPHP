@@ -34,4 +34,12 @@ return [
     'table.raw'              => '生データ',
     'table.int'              => '整数(LE)',
     'table.signed'           => '符号付',
+    'quests.help'            => '削除したい項目にチェックしてください。削除ではキーワード直前の4バイトを0にし、キーワード文字列を同じ長さのヌルで上書きします。',
+    'quests.remove'          => '削除',
+    'quests.remove_all'      => '選択した項目の出現箇所をすべて削除',
+    'quests.status_only'     => 'ステータスのみリセット（テキストは消去しない）',
+    'statuses.help'          => '削除したいステータスを選択してください。キーワード直前の4バイトをリセットし、（必要に応じて）キーワード文字列を上書きします。',
+    'statuses.remove'        => '削除',
+    'statuses.remove_all'    => '選択した項目の出現箇所をすべて削除',
+    'statuses.status_only'   => 'ステータスのみリセット（テキストは消去しない）',
 ];

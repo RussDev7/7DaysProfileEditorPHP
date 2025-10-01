@@ -157,32 +157,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
                         </tbody>
                     </table>
 
+                    <div class="data-section">
+                      <h2><span class="badge bg-success"><?= t('section.quests_pois') ?></span></h2>
+
+                      <p class="text-muted small mb-2"><?= t('quests.help') ?></p>
+					  <div class="mb-2">
+                          <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="rq_all" name="quests_remove_all" value="1">
+                            <label class="form-check-label small" for="rq_all"><?= t('quests.remove_all') ?></label>
+                          </div>
+    					  <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="rq_status_only" name="quests_status_only" value="1">
+                            <label class="form-check-label small" for="rq_status_only"><?= t('quests.status_only') ?></label>
+                          </div>
+		    		  </div>
+
+                      <ul class="list-group list-group-flush" style="max-height: 200px; overflow-y: auto;">
+                        <?php foreach (($parsed_data['quests_and_pois'] ?? []) as $i => $q): ?>
+                          <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-monospace"><?= htmlspecialchars($q) ?></span>
+                            <div class="form-check m-0">
+                              <input class="form-check-input" type="checkbox"
+                                     name="remove_quests[]"
+                                     id="rq<?= $i ?>"
+                                     value="<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8') ?>">
+                              <label class="form-check-label small text-danger" for="rq<?= $i ?>">
+                                <?= t('quests.remove') ?>
+                              </label>
+                            </div>
+                          </li>
+                        <?php endforeach; ?>
+                      </ul>
+                    </div>
+
+                    <div class="data-section">
+                      <h2><span class="badge bg-info"><?= t('section.statuses') ?></span></h2>
+
+                      <p class="text-muted small mb-2">
+                        <?= t('statuses.help') ?>
+                      </p>
+                      <div class="mb-2">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="st_all" name="statuses_remove_all" value="1">
+                          <label class="form-check-label small" for="st_all"><?= t('statuses.remove_all') ?></label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="st_status_only" name="statuses_status_only" value="1">
+                          <label class="form-check-label small" for="st_status_only"><?= t('statuses.status_only') ?></label>
+                        </div>
+                      </div>
+
+                      <ul class="list-group list-group-flush" style="max-height:200px; overflow-y:auto;">
+                        <?php
+                        $skills = $parsed_data['skills_and_perks'] ?? ($parsed_data['statuses'] ?? []);
+                        if (!is_array($skills)) { $skills = []; }
+                        foreach ($skills as $i => $item):
+                            $label = is_array($item) ? ($item['name'] ?? (string)$item) : (string)$item;
+                        ?>
+                          <li class="list-group-item py-1 d-flex justify-content-between align-items-center">
+                            <span class="text-monospace"><?= htmlspecialchars($label) ?></span>
+                            <div class="form-check m-0">
+                              <input class="form-check-input" type="checkbox"
+                                     name="remove_statuses[]"
+                                     id="rs<?= $i ?>"
+                                     value="<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>">
+                              <label class="form-check-label small text-danger" for="rs<?= $i ?>"><?= t('statuses.remove') ?></label>
+                            </div>
+                          </li>
+                        <?php endforeach; ?>
+                      </ul>
+                    </div>
+
                     <button type="submit" class="btn btn-success mt-2"><?= t('save.download') ?></button>
                 </form>
             </div>
 
-            <div class="data-section">
-                <h2><span class="badge bg-success"><?= t('section.quests_pois') ?></span></h2>
-                <ul class="list-group list-group-flush" style="max-height: 200px; overflow-y: auto;">
-                    <?php foreach ($parsed_data['quests_and_pois'] as $item): ?>
-                        <li class="list-group-item py-1"><?php echo htmlspecialchars($item); ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-
-            <div class="data-section">
-                <h2><span class="badge bg-info"><?= t('section.statuses') ?></span></h2>
-                <ul class="list-group list-group-flush" style="max-height: 200px; overflow-y: auto;">
-                    <?php
-                    $skills = $parsed_data['skills_and_perks'] ?? ($parsed_data['statuses'] ?? []);
-                    if (!is_array($skills)) { $skills = []; }
-                    foreach ($skills as $item): ?>
-                        <li class="list-group-item py-1">
-                            <?php echo htmlspecialchars(is_array($item) ? ($item['name'] ?? (string)$item) : (string)$item); ?>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
         <?php endif; ?>
     </div>
 <script>
